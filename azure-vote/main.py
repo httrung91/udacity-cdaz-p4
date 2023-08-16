@@ -1,4 +1,3 @@
-from flask import Flask, request, render_template
 import os
 import random
 import redis
@@ -6,9 +5,9 @@ import socket
 import sys
 import logging
 from datetime import datetime
+from flask import Flask, request, render_template
 
 # App Insights
-# TODO: Import required libraries for App Insights
 from opencensus.ext.azure.log_exporter import AzureLogHandler
 from opencensus.ext.azure.log_exporter import AzureEventHandler
 from opencensus.ext.azure import metrics_exporter
@@ -23,15 +22,10 @@ from opencensus.trace.samplers import ProbabilitySampler
 from opencensus.trace.tracer import Tracer
 from opencensus.ext.flask.flask_middleware import FlaskMiddleware
 
-# For metrics
-stats = stats_module.stats
-view_manager = stats.view_manager
-
 config_integration.trace_integrations(['logging'])
 config_integration.trace_integrations(['requests'])
 
 # Logging
-# logger = # TODO: Setup logger
 logger = logging.getLogger(__name__)
 handler = AzureLogHandler(connection_string='InstrumentationKey=78d721df-994e-418f-8e2d-681b33474963;IngestionEndpoint=https://westus-0.in.applicationinsights.azure.com/;LiveEndpoint=https://westus.livediagnostics.monitor.azure.com/')
 handler.setFormatter(logging.Formatter('%(traceId)s %(spanId)s %(message)s'))
@@ -42,14 +36,14 @@ logger.addHandler(AzureEventHandler(connection_string='InstrumentationKey=78d721
 logger.setLevel(logging.INFO)
 
 # Metrics
-# exporter = # TODO: Setup exporter
+stats = stats_module.stats
+view_manager = stats.view_manager
 exporter = metrics_exporter.new_metrics_exporter(
     enable_standard_metrics=True, 
     connection_string='InstrumentationKey=78d721df-994e-418f-8e2d-681b33474963;IngestionEndpoint=https://westus-0.in.applicationinsights.azure.com/;LiveEndpoint=https://westus.livediagnostics.monitor.azure.com/')
 view_manager.register_exporter(exporter)
 
 # Tracing
-# tracer = # TODO: Setup tracer
 tracer = Tracer(
     exporter=AzureExporter(
         connection_string='InstrumentationKey=78d721df-994e-418f-8e2d-681b33474963;IngestionEndpoint=https://westus-0.in.applicationinsights.azure.com/;LiveEndpoint=https://westus.livediagnostics.monitor.azure.com/'),
@@ -59,7 +53,6 @@ tracer = Tracer(
 app = Flask(__name__)
 
 # Requests
-# middleware = # TODO: Setup flask middleware
 middleware = FlaskMiddleware(
     app,
     exporter=AzureExporter(connection_string="InstrumentationKey=78d721df-994e-418f-8e2d-681b33474963;IngestionEndpoint=https://westus-0.in.applicationinsights.azure.com/;LiveEndpoint=https://westus.livediagnostics.monitor.azure.com/"),
@@ -102,12 +95,10 @@ def index():
 
         # Get current values
         vote1 = r.get(button1).decode('utf-8')
-        # TODO: use tracer object to trace cat vote
         with tracer.span(name="Cats Vote") as span:
             print("Cats Vote")
 
         vote2 = r.get(button2).decode('utf-8')
-        # TODO: use tracer object to trace dog vote
         with tracer.span(name="Dogs Vote") as span:
             print("Dogs Vote")
 
@@ -123,12 +114,10 @@ def index():
             r.set(button2,0)
             vote1 = r.get(button1).decode('utf-8')
             properties = {'custom_dimensions': {'Cats Vote': vote1}}
-            # TODO: use logger object to log cat vote
             logger.info('Cats Vote', extra=properties)
 
             vote2 = r.get(button2).decode('utf-8')
             properties = {'custom_dimensions': {'Dogs Vote': vote2}}
-            # TODO: use logger object to log dog vote
             logger.info('Dogs Vote', extra=properties)
 
             return render_template("index.html", value1=int(vote1), value2=int(vote2), button1=button1, button2=button2, title=title)
@@ -142,12 +131,10 @@ def index():
             # Get current values
             vote1 = r.get(button1).decode('utf-8')
             properties = {'custom_dimensions': {'Cats Vote': vote1}}
-            # TODO: use logger object to log cat vote
             logger.info('Cats Vote', extra=properties)
 
             vote2 = r.get(button2).decode('utf-8')
             properties = {'custom_dimensions': {'Dogs Vote': vote2}}
-            # TODO: use logger object to log dog vote
             logger.info('Dogs Vote', extra=properties)
 
             # Return results
