@@ -3,7 +3,8 @@
 # Variables
 resourceGroup="acdnd-c4-project"
 location="westus"
-osType="UbuntuLTS"
+# osType="UbuntuLTS"
+osType="Ubuntu2204"
 vmssName="udacity-vmss"
 adminName="udacityadmin"
 storageAccount="udacitydiag$RANDOM"
