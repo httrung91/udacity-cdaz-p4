@@ -11,3 +11,13 @@ az acr repository list --name myacr202308 --output table
 az aks update -n udacity-cluster -g acdnd-c4-project --attach-acr myacr202308
 
 az acr show --name myacr202308 --query loginServer --output table
+
+# Deploy the application. Run the command below from the parent directory where the *azure-vote-all-in-one-redis.yaml* file is present. 
+kubectl apply -f azure-vote-all-in-one-redis.yaml
+kubectl set image deployment azure-vote-front azure-vote-front=myacr202308.azurecr.io/azure-vote-front:v1
+# Test the application at the External IP
+# It will take a few minutes to come alive. 
+kubectl get service
+# Check the status of each node
+kubectl get pods
+# Push your local changes to the remote Github repo, preferably in the Deploy_to_AKS branch
